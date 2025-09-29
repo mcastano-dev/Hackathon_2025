@@ -95,6 +95,8 @@ function initHomePage() {
                 initCulturalLibrary();
             } else if (sectionId === 'mapa') {
                 initInteractiveMap();
+            } else if (sectionId === 'calendario') {
+                initCulturalCalendar();
             }
         }
     }
@@ -565,6 +567,12 @@ function initHomePage() {
         setupMapEvents();
     }
 
+    // Cultural Calendar functionality
+    function initCulturalCalendar() {
+        loadCulturalEvents();
+        setupCalendarEvents();
+    }
+
     function setupLibraryEvents() {
         const searchInput = document.getElementById('library-search');
         const categoryFilter = document.getElementById('category-filter');
@@ -961,6 +969,392 @@ function initHomePage() {
                 description: "Una de las reservas naturales más grandes de Centroamérica, hogar de comunidades indígenas.",
                 history: "Establecida en 1991 para proteger la biodiversidad y las culturas indígenas.",
                 significance: "Importante para la conservación de especies endémicas y culturas tradicionales."
+            }
+        ];
+    }
+
+    function loadCulturalEvents() {
+        const eventsContainer = document.getElementById('calendar-events');
+        const events = getNicaraguanCulturalEvents();
+
+        // Sort events by date
+        events.sort((a, b) => {
+            const dateA = new Date(a.startDate);
+            const dateB = new Date(b.startDate);
+            return dateA - dateB;
+        });
+
+        eventsContainer.innerHTML = events.map(event => createEventCard(event)).join('');
+    }
+
+    function setupCalendarEvents() {
+        const categoryFilter = document.getElementById('event-category-filter');
+        const monthFilter = document.getElementById('event-month-filter');
+        const showOnMapBtn = document.getElementById('show-events-on-map');
+
+        categoryFilter.addEventListener('change', filterEvents);
+        monthFilter.addEventListener('change', filterEvents);
+        showOnMapBtn.addEventListener('click', toggleEventsOnMap);
+    }
+
+    function createEventCard(event) {
+        const startDate = new Date(event.startDate);
+        const endDate = new Date(event.endDate);
+        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+        const dateDisplay = startDate.toDateString() === endDate.toDateString()
+            ? `${startDate.getDate()} de ${monthNames[startDate.getMonth()]}`
+            : `${startDate.getDate()} - ${endDate.getDate()} de ${monthNames[startDate.getMonth()]}`;
+
+        return `
+            <div class="event-card" data-category="${event.category}" data-month="${startDate.getMonth() + 1}" data-event-id="${event.id}">
+                <div class="event-header">
+                    <div class="event-date">
+                        <span class="event-day">${startDate.getDate()}</span>
+                        <span class="event-month">${monthNames[startDate.getMonth()].substring(0, 3)}</span>
+                    </div>
+                    <span class="event-category-badge ${event.category}">${event.category}</span>
+                </div>
+                <div class="event-content">
+                    <h3>${event.title}</h3>
+                    <p class="event-location">📍 ${event.location}</p>
+                    <p class="event-description">${event.description}</p>
+                    ${event.relatedLandmarks ? `<p class="event-landmarks">Lugares relacionados: ${event.relatedLandmarks.join(', ')}</p>` : ''}
+                </div>
+                <div class="event-actions">
+                    <button onclick="showEventDetails(${event.id})" class="btn-primary">Ver detalles</button>
+                    <button onclick="shareEvent(${event.id})" class="btn-secondary">Compartir</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function filterEvents() {
+        const categoryFilter = document.getElementById('event-category-filter').value;
+        const monthFilter = document.getElementById('event-month-filter').value;
+        const eventCards = document.querySelectorAll('.event-card');
+
+        eventCards.forEach(card => {
+            const category = card.dataset.category;
+            const month = card.dataset.month;
+
+            const matchesCategory = !categoryFilter || category === categoryFilter;
+            const matchesMonth = !monthFilter || month === monthFilter;
+
+            card.style.display = matchesCategory && matchesMonth ? 'block' : 'none';
+        });
+    }
+
+    function toggleEventsOnMap() {
+        const btn = document.getElementById('show-events-on-map');
+        const isActive = btn.classList.contains('active');
+
+        if (isActive) {
+            // Hide events from map
+            hideEventsFromMap();
+            btn.textContent = 'Mostrar eventos en mapa';
+            btn.classList.remove('active');
+        } else {
+            // Show events on map
+            showEventsOnMap();
+            btn.textContent = 'Ocultar eventos del mapa';
+            btn.classList.add('active');
+        }
+    }
+
+    function showEventsOnMap() {
+        if (!window.nicaraguaMap) return;
+
+        const events = getNicaraguanCulturalEvents();
+        const eventMarkers = [];
+
+        events.forEach(event => {
+            if (event.lat && event.lng) {
+                const marker = new google.maps.Marker({
+                    position: { lat: event.lat, lng: event.lng },
+                    map: window.nicaraguaMap,
+                    title: event.title,
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" fill="#10b981" stroke="white" stroke-width="2"/>
+                                <text x="12" y="16" text-anchor="middle" fill="white" font-size="12" font-weight="bold">E</text>
+                            </svg>
+                        `),
+                        scaledSize: new google.maps.Size(24, 24),
+                        anchor: new google.maps.Point(12, 24)
+                    }
+                });
+
+                marker.addListener('click', () => {
+                    showEventDetails(event.id);
+                });
+
+                eventMarkers.push(marker);
+            }
+        });
+
+        // Store markers globally for cleanup
+        window.eventMarkers = eventMarkers;
+    }
+
+    function hideEventsFromMap() {
+        if (window.eventMarkers) {
+            window.eventMarkers.forEach(marker => {
+                marker.setMap(null);
+            });
+            window.eventMarkers = [];
+        }
+    }
+
+    // Global functions for event interactions
+    window.showEventDetails = function(eventId) {
+        const events = getNicaraguanCulturalEvents();
+        const event = events.find(e => e.id === eventId);
+
+        if (event) {
+            const startDate = new Date(event.startDate);
+            const endDate = new Date(event.endDate);
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+            const dateDisplay = startDate.toDateString() === endDate.toDateString()
+                ? `${startDate.getDate()} de ${monthNames[startDate.getMonth()]} de ${startDate.getFullYear()}`
+                : `Del ${startDate.getDate()} al ${endDate.getDate()} de ${monthNames[startDate.getMonth()]} de ${startDate.getFullYear()}`;
+
+            const content = `
+                <div class="event-detail">
+                    <div class="event-detail-header">
+                        <span class="event-category-badge ${event.category}">${event.category}</span>
+                        <h2>${event.title}</h2>
+                        <p class="event-date">📅 ${dateDisplay}</p>
+                        <p class="event-location">📍 ${event.location}</p>
+                    </div>
+                    <div class="event-detail-content">
+                        <h3>Descripción</h3>
+                        <p>${event.description}</p>
+
+                        ${event.traditions ? `
+                            <h3>Tradiciones</h3>
+                            <p>${event.traditions}</p>
+                        ` : ''}
+
+                        ${event.history ? `
+                            <h3>Historia</h3>
+                            <p>${event.history}</p>
+                        ` : ''}
+
+                        ${event.relatedLandmarks ? `
+                            <h3>Lugares Relacionados</h3>
+                            <ul>
+                                ${event.relatedLandmarks.map(landmark => `<li>${landmark}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                    </div>
+                    <div class="event-detail-actions">
+                        <button onclick="shareEvent(${event.id})" class="btn-secondary">Compartir Evento</button>
+                        ${event.lat && event.lng ? `<button onclick="centerMapOnEvent(${event.lat}, ${event.lng})" class="btn-primary">Ver en Mapa</button>` : ''}
+                    </div>
+                </div>
+            `;
+
+            openModal(`Evento Cultural: ${event.title}`, content);
+        }
+    };
+
+    window.shareEvent = function(eventId) {
+        const events = getNicaraguanCulturalEvents();
+        const event = events.find(e => e.id === eventId);
+
+        if (event) {
+            const shareText = `¡No te pierdas "${event.title}" en ${event.location}! ${event.description}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: event.title,
+                    text: shareText,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(`${event.title}\n${shareText}\n${window.location.href}`);
+                alert('Información del evento copiada al portapapeles');
+            }
+        }
+    };
+
+    window.centerMapOnEvent = function(lat, lng) {
+        if (window.nicaraguaMap) {
+            window.nicaraguaMap.setCenter({ lat: lat, lng: lng });
+            window.nicaraguaMap.setZoom(12);
+            // Switch to map section
+            showSection('mapa');
+        }
+    };
+
+    function getNicaraguanCulturalEvents() {
+        return [
+            {
+                id: 1,
+                title: "Fiestas de Santo Domingo",
+                category: "religious",
+                startDate: "2024-08-01",
+                endDate: "2024-08-10",
+                location: "León",
+                lat: 12.4370,
+                lng: -86.8794,
+                description: "Celebración en honor a Santo Domingo de Guzmán con procesiones, bailes folklóricos y fuegos artificiales.",
+                traditions: "Procesiones nocturnas, bailes tradicionales y comidas típicas en las calles de León.",
+                history: "Esta celebración se remonta al siglo XVII y es una de las fiestas patronales más importantes de Nicaragua.",
+                relatedLandmarks: ["Catedral de León", "Basílica de Nuestra Señora de la Asunción"]
+            },
+            {
+                id: 2,
+                title: "Festival Internacional de Poesía de Granada",
+                category: "cultural",
+                startDate: "2024-02-15",
+                endDate: "2024-02-20",
+                location: "Granada",
+                lat: 11.9342,
+                lng: -85.9572,
+                description: "Encuentro internacional de poetas donde se celebran lecturas, talleres y exposiciones de arte poético.",
+                traditions: "Lecturas en plazas coloniales, recitales nocturnos y homenajes a poetas nicaragüenses como Rubén Darío.",
+                history: "Iniciado en 2005, este festival ha traído a Granada a poetas de todo el mundo.",
+                relatedLandmarks: ["Catedral de Granada", "Fortaleza de la Inmaculada Concepción"]
+            },
+            {
+                id: 3,
+                title: "Carnaval de Masaya",
+                category: "traditional",
+                startDate: "2024-03-01",
+                endDate: "2024-03-05",
+                location: "Masaya",
+                lat: 11.9744,
+                lng: -86.0947,
+                description: "Uno de los carnavales más antiguos de Nicaragua con desfiles, música y bailes tradicionales.",
+                traditions: "Comparsas, máscaras artesanales, música de marimba y comidas tradicionales.",
+                history: "Sus orígenes se remontan al siglo XIX, siendo una fusión de tradiciones indígenas y africanas.",
+                relatedLandmarks: ["Volcán Masaya", "Mercado Nacional de Artesanías"]
+            },
+            {
+                id: 4,
+                title: "Día de los Difuntos",
+                category: "religious",
+                startDate: "2024-11-01",
+                endDate: "2024-11-02",
+                location: "Todo el país",
+                description: "Celebración del Día de los Difuntos con visitas a cementerios y ofrendas florales.",
+                traditions: "Visitas a tumbas decoradas con flores, comidas tradicionales y rezos familiares.",
+                history: "Tradición que combina elementos católicos con costumbres indígenas precolombinas.",
+                relatedLandmarks: ["Cementerio de Granada", "Cementerio de León"]
+            },
+            {
+                id: 5,
+                title: "Semana Santa en Granada",
+                category: "religious",
+                startDate: "2024-04-01",
+                endDate: "2024-04-07",
+                location: "Granada",
+                lat: 11.9342,
+                lng: -85.9572,
+                description: "Procesiones religiosas, alfombras de aserrín y celebraciones tradicionales de Semana Santa.",
+                traditions: "Procesiones con imágenes religiosas, elaboración de alfombras de colores y comidas especiales.",
+                history: "Tradición colonial española que se mantiene viva en la arquitectura colonial de Granada.",
+                relatedLandmarks: ["Catedral de Granada", "Iglesias coloniales"]
+            },
+            {
+                id: 6,
+                title: "Festival de Música y Danza Folklórica",
+                category: "cultural",
+                startDate: "2024-09-15",
+                endDate: "2024-09-20",
+                location: "Managua",
+                lat: 12.1150,
+                lng: -86.2362,
+                description: "Festival nacional que reúne a grupos folklóricos de todo el país para mostrar danzas tradicionales.",
+                traditions: "Danzas como El Güegüense, Los Diabilitos, La Indita y música de marimba.",
+                history: "Celebrado desde 1970, es un importante evento para preservar las tradiciones culturales.",
+                relatedLandmarks: ["Teatro Nacional Rubén Darío", "Parque Nacional Loma de Tiscapa"]
+            },
+            {
+                id: 7,
+                title: "Fiesta de la Virgen de la Asunción",
+                category: "religious",
+                startDate: "2024-08-15",
+                endDate: "2024-08-20",
+                location: "León",
+                lat: 12.4372,
+                lng: -86.8792,
+                description: "Celebración en honor a la Virgen de la Asunción con procesiones y actividades religiosas.",
+                traditions: "Procesiones con la imagen de la virgen, bailes tradicionales y comidas especiales.",
+                history: "Fiesta patronal de León que combina elementos religiosos con tradiciones populares.",
+                relatedLandmarks: ["Basílica de Nuestra Señora de la Asunción", "Catedral de León"]
+            },
+            {
+                id: 8,
+                title: "Día de la Independencia",
+                category: "historical",
+                startDate: "2024-09-15",
+                endDate: "2024-09-15",
+                location: "Todo el país",
+                description: "Celebración de la independencia de Nicaragua con desfiles cívicos y actividades patrióticas.",
+                traditions: "Desfiles escolares, discursos patrióticos y comidas tradicionales.",
+                history: "Conmemora la independencia de España en 1821 y de México en 1838.",
+                relatedLandmarks: ["Parque Nacional Loma de Tiscapa", "Plaza de la Revolución"]
+            },
+            {
+                id: 9,
+                title: "Festival del Maíz",
+                category: "traditional",
+                startDate: "2024-09-01",
+                endDate: "2024-09-05",
+                location: "Jinotega",
+                lat: 13.0911,
+                lng: -86.0022,
+                description: "Celebración del maíz como cultivo fundamental de la cultura nicaragüense.",
+                traditions: "Demostraciones de siembra, comidas tradicionales a base de maíz y danzas agrícolas.",
+                history: "El maíz es sagrado en las culturas indígenas y sigue siendo fundamental en la dieta nicaragüense.",
+                relatedLandmarks: ["Reserva Natural de Peñas Blancas", "Plantaciones de café"]
+            },
+            {
+                id: 10,
+                name: "Navidad en Nicaragua",
+                category: "religious",
+                startDate: "2024-12-24",
+                endDate: "2024-12-25",
+                location: "Todo el país",
+                description: "Celebración navideña con nacimientos, villancicos y comidas tradicionales.",
+                traditions: "Nacimientos artesanales, villancicos en las calles y comidas como tamales y anafre.",
+                history: "Tradición colonial española mezclada con costumbres indígenas locales.",
+                relatedLandmarks: ["Iglesias coloniales", "Plazas principales"]
+            },
+            {
+                id: 11,
+                title: "Fiesta de San Sebastián",
+                category: "religious",
+                startDate: "2024-01-20",
+                endDate: "2024-01-25",
+                location: "Diriamba",
+                lat: 11.8592,
+                lng: -86.2394,
+                description: "Fiesta patronal con bailes tradicionales y celebraciones populares.",
+                traditions: "Bailes de marimba, procesiones y comidas tradicionales.",
+                history: "Celebración que combina elementos religiosos con tradiciones populares locales.",
+                relatedLandmarks: ["Iglesia de San Sebastián", "Mercados tradicionales"]
+            },
+            {
+                id: 12,
+                title: "Carnaval de San Miguelito",
+                category: "traditional",
+                startDate: "2024-11-20",
+                endDate: "2024-11-25",
+                location: "Rivas",
+                lat: 11.4372,
+                lng: -85.8263,
+                description: "Carnaval costero con música, bailes y tradiciones afrocaribeñas.",
+                traditions: "Música de palo de mayo, bailes tradicionales y comidas del caribe.",
+                history: "Influenciado por las comunidades afrodescendientes de la costa del Pacífico.",
+                relatedLandmarks: ["Playa de San Jorge", "Mercados costeros"]
             }
         ];
     }

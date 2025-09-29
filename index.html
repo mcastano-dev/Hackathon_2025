@@ -144,9 +144,71 @@
             </section>
 
             <section id="calendario" class="section">
-                <h2>Calendario Cultural</h2>
-                <p>Descubre eventos y fechas importantes de la cultura nicaragüense.</p>
-                <!-- Calendar component will be added here -->
+                <div class="calendar-header">
+                    <h2>Calendario Cultural de Nicaragua</h2>
+                    <p>Descubre los eventos, festivales y fechas importantes que dan vida a nuestra cultura</p>
+                </div>
+
+                <div class="calendar-controls">
+                    <div class="calendar-filters">
+                        <select id="event-category-filter">
+                            <option value="">Todas las categorías</option>
+                            <option value="religious">Religiosas</option>
+                            <option value="historical">Históricas</option>
+                            <option value="cultural">Culturales</option>
+                            <option value="natural">Naturales</option>
+                            <option value="traditional">Tradicionales</option>
+                        </select>
+                        <select id="event-month-filter">
+                            <option value="">Todos los meses</option>
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="calendar-toggle">
+                        <button id="show-events-on-map" class="btn-secondary">Mostrar eventos en mapa</button>
+                    </div>
+                </div>
+
+                <div id="calendar-events" class="calendar-events">
+                    <!-- Events will be loaded here -->
+                </div>
+
+                <div class="calendar-legend">
+                    <h3>Categorías de Eventos</h3>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="event-badge religious"></span>
+                            <span>Religiosos</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="event-badge historical"></span>
+                            <span>Históricos</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="event-badge cultural"></span>
+                            <span>Culturales</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="event-badge natural"></span>
+                            <span>Naturales</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="event-badge traditional"></span>
+                            <span>Tradicionales</span>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section id="biblioteca" class="section">
