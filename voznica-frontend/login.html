@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VozNica - Acceso</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="welcome-box">
+            <h1>Bienvenido a VozNica</h1>
+            <p>deseas:</p>
+            <div class="auth-options">
+                <button class="btn-primary" id="login-btn">Iniciar sesión</button>
+                <button class="btn-secondary" id="register-btn">Registrarse</button>
+                <button class="btn-secondary" id="guest-btn">Acceder como invitado</button>
+            </div>
+        </div>
+
+        <div class="auth-card" id="auth-card" style="display: none;">
+            <div class="auth-tabs">
+                <button class="tab active" id="tab-login">Iniciar sesión</button>
+                <button class="tab" id="tab-register">Registrarse</button>
+            </div>
+
+            <form class="auth-form active" id="login-form">
+                <h2>VozNica</h2>
+                <div class="form-group">
+                    <label for="login-username">Nombre de usuario</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+
+            <form class="auth-form" id="register-form">
+                <h2>Registrarse</h2>
+                <div class="form-group">
+                    <label for="register-names">Nombres</label>
+                    <input type="text" id="register-names" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-lastnames">Apellidos</label>
+                    <input type="text" id="register-lastnames" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-dob">Fecha de nacimiento</label>
+                    <input type="date" id="register-dob" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-sex">Sexo</label>
+                    <select id="register-sex" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Male">Hombre</option>
+                        <option value="Female">Mujer</option>
+                        <option value="Non-Binary">No binario</option>
+                        <option value="Intersex">Intersex</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="register-department">Departamento</label>
+                    <select id="register-department" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Boaco">Boaco</option>
+                        <option value="Carazo">Carazo</option>
+                        <option value="Chinandega">Chinandega</option>
+                        <option value="Chontales">Chontales</option>
+                        <option value="Estelí">Estelí</option>
+                        <option value="Granada">Granada</option>
+                        <option value="Jinotega">Jinotega</option>
+                        <option value="León">León</option>
+                        <option value="Madriz">Madriz</option>
+                        <option value="Managua">Managua</option>
+                        <option value="Masaya">Masaya</option>
+                        <option value="Matagalpa">Matagalpa</option>
+                        <option value="Nueva Segovia">Nueva Segovia</option>
+                        <option value="Río San Juan">Río San Juan</option>
+                        <option value="Rivas">Rivas</option>
+                        <option value="Costa Caribe Norte">Costa Caribe Norte</option>
+                        <option value="Costa Caribe Sur">Costa Caribe Sur</option>
+                        <option value="Extranjero">Extranjero</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="register-phone">Número de teléfono</label>
+                    <input type="tel" id="register-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Correo electrónico</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-username">Nombre de usuario</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <button type="submit" class="btn-primary">Registrarse</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

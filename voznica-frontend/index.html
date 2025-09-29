@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VozNica - Plataforma Cultural</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <aside id="sidebar" class="sidebar" aria-label="Menú de navegación">
+            <div class="sidebar-header">
+                <h2>VozNica</h2>
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Cerrar menú">
+                    <span class="hamburger"></span>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <details class="nav-group">
+                    <summary class="nav-group-title">Explorar</summary>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-section="inicio">Inicio</a></li>
+                        <li><a href="#" class="nav-link" data-section="mapa">Mapa interactivo</a></li>
+                        <li><a href="#" class="nav-link" data-section="calendario">Calendario cultural</a></li>
+                        <li><a href="#" class="nav-link" data-section="biblioteca">Biblioteca cultural</a></li>
+                    </ul>
+                </details>
+                <details class="nav-group">
+                    <summary class="nav-group-title">Participar</summary>
+                    <ul>
+                        <li><a href="#" class="nav-link" data-section="publicaciones">Publicaciones colaborativas</a></li>
+                        <li><a href="#" class="nav-link" data-section="retos">Retos y juegos didácticos</a></li>
+                    </ul>
+                </details>
+                <details class="nav-group">
+                    <summary class="nav-group-title">Usuario</summary>
+                    <ul>
+                        <li><a href="#" class="nav-link" data-section="buscar">Buscar</a></li>
+                        <li><a href="#" class="nav-link" data-section="perfil">Perfil</a></li>
+                        <li><a href="#" class="nav-link" data-section="configuracion">Configuración</a></li>
+                    </ul>
+                </details>
+                <details class="nav-group">
+                    <summary class="nav-group-title">Sesión</summary>
+                    <ul>
+                        <li><a href="#" class="nav-link" onclick="logout()">Cerrar sesión</a></li>
+                    </ul>
+                </details>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <button id="mobile-sidebar-toggle" class="mobile-sidebar-toggle" aria-label="Abrir menú">
+                <span class="hamburger"></span>
+            </button>
+
+            <!-- Home Page Sections -->
+            <section id="inicio" class="section active">
+                <div class="hero-section">
+                    <div class="logo-placeholder" aria-label="Logo de VozNica">
+                        <!-- Placeholder for logo image -->
+                    </div>
+                    <div class="hero-text">
+                        <h1>VozNica</h1>
+                        <p>Plataforma colaborativa para preservar y compartir saberes populares, tradiciones y memorias de Nicaragua.</p>
+                    </div>
+                </div>
+                <div class="about-section">
+                    <h2>Misión y Visión</h2>
+                    <div class="mission-vision">
+                        <div class="mission">
+                            <h3>Misión</h3>
+                            <p>Preservar y promover la rica diversidad cultural de Nicaragua a través de la colaboración digital, conectando comunidades y generaciones para mantener vivas nuestras tradiciones.</p>
+                        </div>
+                        <div class="vision">
+                            <h3>Visión</h3>
+                            <p>Ser la plataforma líder en la documentación y difusión del patrimonio cultural nicaragüense, fomentando la participación activa de todos los ciudadanos en la construcción de nuestra identidad colectiva.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other Sections -->
+            <section id="publicaciones" class="section">
+                <div class="publications-header">
+                    <h2>Publicaciones Colaborativas</h2>
+                    <button id="create-publication-btn" class="btn-primary">Crear Publicación</button>
+                </div>
+
+                <div class="publications-controls">
+                    <div class="search-bar">
+                        <input type="text" id="publication-search" placeholder="Buscar por título, usuario o contenido...">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="date-filter">
+                            <option value="">Filtrar por fecha</option>
+                            <option value="today">Hoy</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month">Este mes</option>
+                            <option value="year">Este año</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="publications-feed" class="publications-feed">
+                    <!-- Publications will be loaded here -->
+                </div>
+            </section>
+
+            <section id="mapa" class="section">
+                <h2>Mapa Interactivo</h2>
+                <p>Explora las tradiciones y lugares culturales de Nicaragua.</p>
+                <!-- Map component will be added here -->
+            </section>
+
+            <section id="calendario" class="section">
+                <h2>Calendario Cultural</h2>
+                <p>Descubre eventos y fechas importantes de la cultura nicaragüense.</p>
+                <!-- Calendar component will be added here -->
+            </section>
+
+            <section id="biblioteca" class="section">
+                <div class="library-header">
+                    <h2>Biblioteca Cultural</h2>
+                    <p>Accede a recursos precisos e importantes sobre la cultura nicaragüense</p>
+                </div>
+
+                <div class="library-controls">
+                    <div class="search-bar">
+                        <input type="text" id="library-search" placeholder="Buscar recursos culturales...">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="category-filter">
+                            <option value="">Todas las categorías</option>
+                            <option value="historia">Historia</option>
+                            <option value="tradiciones">Tradiciones</option>
+                            <option value="arte">Arte</option>
+                            <option value="musica">Música</option>
+                            <option value="gastronomia">Gastronomía</option>
+                            <option value="literatura">Literatura</option>
+                            <option value="religion">Religión</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="library-grid" class="library-grid">
+                    <!-- Cultural resources will be loaded here -->
+                </div>
+            </section>
+
+            <section id="retos" class="section">
+                <h2>Retos y Juegos Didácticos</h2>
+                <p>Participa en actividades interactivas para aprender sobre nuestra cultura.</p>
+                <!-- Challenges component will be added here -->
+            </section>
+
+            <section id="buscar" class="section">
+                <h2>Buscar Usuarios</h2>
+                <div class="search-users">
+                    <div class="search-bar">
+                        <input type="text" id="user-search" placeholder="Buscar usuario por nombre de usuario...">
+                        <button id="search-user-btn" class="btn-primary">Buscar</button>
+                    </div>
+                </div>
+
+                <div id="search-results" class="search-results">
+                    <!-- Search results will be displayed here -->
+                </div>
+            </section>
+
+            <section id="perfil" class="section">
+                <div class="profile-header">
+                    <h2>Mi Perfil</h2>
+                    <button id="edit-profile-btn" class="btn-secondary">Editar Perfil</button>
+                </div>
+
+                <div id="profile-info" class="profile-info">
+                    <!-- User info will be loaded here -->
+                </div>
+
+                <div class="profile-posts">
+                    <h3>Mis Publicaciones</h3>
+                    <div id="user-posts" class="user-posts">
+                        <!-- User's posts will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <section id="configuracion" class="section">
+                <h2>Configuración</h2>
+                <p>Ajusta las preferencias de tu cuenta.</p>
+                <!-- Settings form will be added here -->
+            </section>
+
+            <footer class="footer">
+                <div class="footer-content">
+                    <h3>Contacto</h3>
+                    <p>Información de contacto próximamente.</p>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal for creating publication -->
+    <div id="publication-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="publication-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+            <h2 id="publication-modal-title">Crear Nueva Publicación</h2>
+            <form id="publication-form">
+                <div class="form-group">
+                    <label for="pub-title">Título</label>
+                    <input type="text" id="pub-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="pub-content">Contenido</label>
+                    <textarea id="pub-content" rows="6" required placeholder="Comparte tu historia, tradición o conocimiento cultural..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="pub-category">Categoría</label>
+                    <select id="pub-category">
+                        <option value="historia">Historia</option>
+                        <option value="tradicion">Tradición</option>
+                        <option value="receta">Receta</option>
+                        <option value="arte">Arte</option>
+                        <option value="musica">Música</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Publicar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for editing profile -->
+    <div id="edit-profile-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-profile-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+            <h2 id="edit-profile-modal-title">Editar Perfil</h2>
+            <form id="edit-profile-form">
+                <div class="form-group">
+                    <label for="edit-names">Nombres</label>
+                    <input type="text" id="edit-names" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-lastnames">Apellidos</label>
+                    <input type="text" id="edit-lastnames" required>
+                </div>
+                <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for map, etc. -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+            <h2 id="modal-title">Modal Title</h2>
+            <div id="modal-body">
+                <!-- Modal content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for map, etc. -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+            <h2 id="modal-title">Modal Title</h2>
+            <div id="modal-body">
+                <!-- Modal content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

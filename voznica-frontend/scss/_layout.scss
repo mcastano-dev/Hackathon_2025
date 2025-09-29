@@ -1,0 +1,213 @@
+@import 'variables';
+
+// Global reset and base styles
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  color: $indigo-dye;
+  background-color: $white;
+}
+
+// App container
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+// Sidebar
+.sidebar {
+  width: 250px;
+  background-color: $indigo-dye;
+  color: $white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+
+  &.collapsed {
+    transform: translateX(-100%);
+  }
+
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba($white, 0.1);
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+  }
+
+  .sidebar-nav {
+    ul {
+      list-style: none;
+
+      li {
+        a {
+          display: block;
+          padding: 1rem;
+          color: $white;
+          text-decoration: none;
+          transition: background-color 0.3s ease;
+
+          &:hover, &.active {
+            background-color: rgba($white, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  .sidebar-toggle {
+    background: none;
+    border: none;
+    color: $white;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+}
+
+// Main content
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+
+  .sidebar.collapsed ~ & {
+    margin-left: 0;
+  }
+}
+
+// Header
+.header {
+  background-color: $white;
+  padding: 1rem;
+  border-bottom: 1px solid rgba($indigo-dye, 0.1);
+  display: flex;
+  align-items: center;
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .logo-placeholder {
+      width: 60px;
+      height: 60px;
+      background-color: $selective-yellow;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: $indigo-dye;
+    }
+
+    .intro-text {
+      h1 {
+        font-size: 2rem;
+        color: $indigo-dye;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        color: $indian-red;
+        max-width: 400px;
+      }
+    }
+  }
+}
+
+// Mobile sidebar toggle
+.mobile-sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+// Section
+.section {
+  padding: 2rem;
+
+  h2 {
+    margin-bottom: 1rem;
+    color: $indigo-dye;
+  }
+}
+
+// Modal
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+
+  &.open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background-color: $white;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  }
+}
+
+
+// Responsive design
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+
+    &.open {
+      transform: translateX(0);
+    }
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .mobile-sidebar-toggle {
+    display: block;
+  }
+
+  .header .logo-section .intro-text p {
+    display: none;
+  }
+}
