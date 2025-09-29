@@ -109,9 +109,38 @@
             </section>
 
             <section id="mapa" class="section">
-                <h2>Mapa Interactivo</h2>
-                <p>Explora las tradiciones y lugares culturales de Nicaragua.</p>
-                <!-- Map component will be added here -->
+                <div class="map-header">
+                    <h2>Mapa Interactivo de Nicaragua</h2>
+                    <p>Explora los lugares históricos y culturales más importantes de Nicaragua</p>
+                </div>
+
+                <div class="map-container">
+                    <div class="map-legend">
+                        <h3>Lugares Destacados</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <span class="legend-pin historical"></span>
+                                <span>Sitios Históricos</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-pin cultural"></span>
+                                <span>Lugares Culturales</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-pin natural"></span>
+                                <span>Sitios Naturales</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nicaragua-map">
+                        <!-- Map SVG will be inserted here by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="map-info">
+                    <p>Haz clic en los pines del mapa para conocer más sobre cada lugar.</p>
+                </div>
             </section>
 
             <section id="calendario" class="section">

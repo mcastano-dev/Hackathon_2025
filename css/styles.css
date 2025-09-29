@@ -1044,6 +1044,236 @@ body {
   color: #fefefe;
 }
 
+.map-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.map-header h2 {
+  color: #10426f;
+  margin-bottom: 0.5rem;
+}
+.map-header p {
+  color: #e45953;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.map-container {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.map-container .map-legend {
+  flex: 0 0 250px;
+  background: #fefefe;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.map-container .map-legend h3 {
+  color: #10426f;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+.map-container .map-legend .legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.map-container .map-legend .legend-items .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.map-container .map-legend .legend-items .legend-item .legend-pin {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fefefe;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.map-container .map-legend .legend-items .legend-item .legend-pin.historical {
+  background: #e45953;
+}
+.map-container .map-legend .legend-items .legend-item .legend-pin.cultural {
+  background: #fdbc32;
+}
+.map-container .map-legend .legend-items .legend-item .legend-pin.natural {
+  background: #22c55e;
+}
+.map-container .map-legend .legend-items .legend-item span {
+  font-size: 0.9rem;
+  color: #10426f;
+}
+.map-container .nicaragua-map {
+  flex: 1;
+  min-width: 300px;
+  height: 500px;
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+.map-container .nicaragua-map .nicaragua-svg {
+  width: 100%;
+  height: 100%;
+}
+.map-container .nicaragua-map .nicaragua-svg path {
+  transition: fill 0.3s ease;
+}
+.map-container .nicaragua-map .nicaragua-svg path:hover {
+  fill: #dbeafe;
+}
+.map-container .nicaragua-map .nicaragua-svg .department-label {
+  font-size: 12px;
+  fill: #10426f;
+  font-weight: 500;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.map-container .nicaragua-map .map-pin {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fefefe;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transform: translate(-50%, -50%);
+}
+.map-container .nicaragua-map .map-pin:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.map-container .nicaragua-map .map-pin.historical {
+  background: #e45953;
+}
+.map-container .nicaragua-map .map-pin.cultural {
+  background: #fdbc32;
+}
+.map-container .nicaragua-map .map-pin.natural {
+  background: #22c55e;
+}
+.map-container .nicaragua-map .map-pin::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid rgba(0, 0, 0, 0.3);
+}
+
+.map-info {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(253, 188, 50, 0.1);
+  border-radius: 8px;
+}
+.map-info p {
+  color: #10426f;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.landmark-info .landmark-header {
+  margin-bottom: 1.5rem;
+}
+.landmark-info .landmark-header .landmark-type {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.landmark-info .landmark-header .landmark-type.historical {
+  background: #e45953;
+  color: #fefefe;
+}
+.landmark-info .landmark-header .landmark-type.cultural {
+  background: #fdbc32;
+  color: #10426f;
+}
+.landmark-info .landmark-header .landmark-type.natural {
+  background: #22c55e;
+  color: #fefefe;
+}
+.landmark-info .landmark-header h3 {
+  color: #10426f;
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+}
+.landmark-info .landmark-header .landmark-location {
+  color: #e45953;
+  font-weight: 500;
+  margin: 0;
+}
+.landmark-info .landmark-description {
+  margin-bottom: 1.5rem;
+}
+.landmark-info .landmark-description p {
+  color: #10426f;
+  line-height: 1.6;
+  margin: 0;
+}
+.landmark-info .landmark-details {
+  background: rgba(16, 66, 111, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+.landmark-info .landmark-details h4 {
+  color: #10426f;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+.landmark-info .landmark-details p {
+  color: #e45953;
+  line-height: 1.6;
+  margin: 0 0 0.75rem 0;
+}
+.landmark-info .landmark-details p:last-child {
+  margin-bottom: 0;
+}
+.landmark-info .landmark-details p strong {
+  color: #10426f;
+}
+.landmark-info .landmark-actions {
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .map-container {
+    flex-direction: column;
+  }
+  .map-container .map-legend {
+    flex: none;
+    order: 2;
+  }
+  .map-container .nicaragua-map {
+    order: 1;
+    height: 400px;
+  }
+  .map-pin {
+    width: 16px;
+    height: 16px;
+  }
+  .map-pin::after {
+    border-left-width: 4px;
+    border-right-width: 4px;
+    border-top-width: 6px;
+  }
+}
 .section {
   display: none;
 }

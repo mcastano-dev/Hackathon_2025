@@ -1029,6 +1029,283 @@
   }
 }
 
+// Interactive Map section
+.map-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h2 {
+    color: $indigo-dye;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: $indian-red;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.map-container {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+
+  .map-legend {
+    flex: 0 0 250px;
+    background: $white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    h3 {
+      color: $indigo-dye;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .legend-pin {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          border: 2px solid $white;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+          &.historical {
+            background: $indian-red;
+          }
+
+          &.cultural {
+            background: $selective-yellow;
+          }
+
+          &.natural {
+            background: #22c55e;
+          }
+        }
+
+        span {
+          font-size: 0.9rem;
+          color: $indigo-dye;
+        }
+      }
+    }
+  }
+
+  .nicaragua-map {
+    flex: 1;
+    min-width: 300px;
+    height: 500px;
+    background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .nicaragua-svg {
+      width: 100%;
+      height: 100%;
+
+      path {
+        transition: fill 0.3s ease;
+
+        &:hover {
+          fill: #dbeafe;
+        }
+      }
+
+      .department-label {
+        font-size: 12px;
+        fill: $indigo-dye;
+        font-weight: 500;
+        text-anchor: middle;
+        pointer-events: none;
+      }
+    }
+
+    .map-pin {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid $white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transform: translate(-50%, -50%);
+
+      &:hover {
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      &.historical {
+        background: $indian-red;
+      }
+
+      &.cultural {
+        background: $selective-yellow;
+      }
+
+      &.natural {
+        background: #22c55e;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+}
+
+.map-info {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba($selective-yellow, 0.1);
+  border-radius: 8px;
+
+  p {
+    color: $indigo-dye;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+// Landmark info modal styling
+.landmark-info {
+  .landmark-header {
+    margin-bottom: 1.5rem;
+
+    .landmark-type {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+
+      &.historical {
+        background: $indian-red;
+        color: $white;
+      }
+
+      &.cultural {
+        background: $selective-yellow;
+        color: $indigo-dye;
+      }
+
+      &.natural {
+        background: #22c55e;
+        color: $white;
+      }
+    }
+
+    h3 {
+      color: $indigo-dye;
+      margin: 0 0 0.25rem 0;
+      font-size: 1.5rem;
+    }
+
+    .landmark-location {
+      color: $indian-red;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  .landmark-description {
+    margin-bottom: 1.5rem;
+
+    p {
+      color: $indigo-dye;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  .landmark-details {
+    background: rgba($indigo-dye, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+
+    h4 {
+      color: $indigo-dye;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    p {
+      color: $indian-red;
+      line-height: 1.6;
+      margin: 0 0 0.75rem 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: $indigo-dye;
+      }
+    }
+  }
+
+  .landmark-actions {
+    text-align: center;
+  }
+}
+
+// Responsive design for map
+@media (max-width: 768px) {
+  .map-container {
+    flex-direction: column;
+
+    .map-legend {
+      flex: none;
+      order: 2;
+    }
+
+    .nicaragua-map {
+      order: 1;
+      height: 400px;
+    }
+  }
+
+  .map-pin {
+    width: 16px;
+    height: 16px;
+
+    &::after {
+      border-left-width: 4px;
+      border-right-width: 4px;
+      border-top-width: 6px;
+    }
+  }
+}
+
 // Section visibility
 .section {
   display: none;

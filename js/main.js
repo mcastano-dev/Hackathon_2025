@@ -93,6 +93,8 @@ function initHomePage() {
                 initSearch();
             } else if (sectionId === 'biblioteca') {
                 initCulturalLibrary();
+            } else if (sectionId === 'mapa') {
+                initInteractiveMap();
             }
         }
     }
@@ -557,6 +559,12 @@ function initHomePage() {
         setupLibraryEvents();
     }
 
+    // Interactive Map functionality
+    function initInteractiveMap() {
+        loadNicaraguaMap();
+        setupMapEvents();
+    }
+
     function setupLibraryEvents() {
         const searchInput = document.getElementById('library-search');
         const categoryFilter = document.getElementById('category-filter');
@@ -719,4 +727,199 @@ function initHomePage() {
             alert('Enlace copiado al portapapeles');
         }
     };
+
+    function loadNicaraguaMap() {
+        const mapContainer = document.querySelector('.nicaragua-map');
+
+        // Create a simplified SVG map of Nicaragua
+        const mapSVG = `
+            <svg viewBox="0 0 400 600" class="nicaragua-svg">
+                <!-- Simplified outline of Nicaragua -->
+                <path d="M50,100 L350,80 L380,150 L360,250 L320,350 L280,400 L200,450 L150,480 L100,500 L80,450 L60,350 L50,250 Z"
+                      fill="#f0f8ff" stroke="#10426F" stroke-width="2"/>
+
+                <!-- Lake Nicaragua -->
+                <ellipse cx="200" cy="350" rx="80" ry="40" fill="#87CEEB" stroke="#10426F" stroke-width="1"/>
+
+                <!-- Lake Managua -->
+                <ellipse cx="150" cy="200" rx="40" ry="25" fill="#87CEEB" stroke="#10426F" stroke-width="1"/>
+
+                <!-- Department labels (simplified) -->
+                <text x="120" y="180" class="department-label">Managua</text>
+                <text x="220" y="320" class="department-label">Granada</text>
+                <text x="80" y="280" class="department-label">León</text>
+                <text x="300" y="200" class="department-label">RAAN</text>
+                <text x="320" y="280" class="department-label">RAAS</text>
+            </svg>
+        `;
+
+        mapContainer.innerHTML = mapSVG;
+
+        // Add landmarks pins
+        addLandmarkPins();
+    }
+
+    function addLandmarkPins() {
+        const landmarks = getNicaraguanLandmarks();
+        const mapContainer = document.querySelector('.nicaragua-map');
+
+        landmarks.forEach(landmark => {
+            const pin = document.createElement('div');
+            pin.className = `map-pin ${landmark.type}`;
+            pin.style.left = `${landmark.x}%`;
+            pin.style.top = `${landmark.y}%`;
+            pin.setAttribute('data-landmark', landmark.id);
+            pin.title = landmark.name;
+
+            pin.addEventListener('click', () => showLandmarkInfo(landmark));
+
+            mapContainer.appendChild(pin);
+        });
+    }
+
+    function setupMapEvents() {
+        // Map is interactive through pin clicks
+    }
+
+    function showLandmarkInfo(landmark) {
+        const modal = document.getElementById('modal');
+        const title = `${landmark.name} - ${landmark.location}`;
+        const content = `
+            <div class="landmark-info">
+                <div class="landmark-header">
+                    <span class="landmark-type ${landmark.type}">${landmark.type}</span>
+                    <h3>${landmark.name}</h3>
+                    <p class="landmark-location">${landmark.location}</p>
+                </div>
+                <div class="landmark-description">
+                    <p>${landmark.description}</p>
+                </div>
+                <div class="landmark-details">
+                    <h4>Información histórica:</h4>
+                    <p>${landmark.history}</p>
+                    ${landmark.significance ? `<p><strong>Importancia:</strong> ${landmark.significance}</p>` : ''}
+                </div>
+                <div class="landmark-actions">
+                    <button onclick="shareResource('${landmark.name}', window.location.href)" class="btn-secondary">Compartir</button>
+                </div>
+            </div>
+        `;
+
+        openModal(title, content);
+    }
+
+    function getNicaraguanLandmarks() {
+        return [
+            {
+                id: 1,
+                name: "Catedral de León",
+                location: "León",
+                type: "historical",
+                x: 15,
+                y: 25,
+                description: "La Catedral de León es una de las catedrales más antiguas de América Latina y un símbolo de la arquitectura colonial española.",
+                history: "Construida entre 1747 y 1814, es Patrimonio de la Humanidad por la UNESCO desde 2011.",
+                significance: "Representa la fusión de culturas indígenas y españolas en Nicaragua."
+            },
+            {
+                id: 2,
+                name: "Volcán Masaya",
+                location: "Masaya",
+                type: "natural",
+                x: 45,
+                y: 35,
+                description: "Uno de los volcanes más activos de Nicaragua, conocido como la 'Boca del Infierno'.",
+                history: "Ha estado activo por miles de años y es parte del Parque Nacional Volcán Masaya.",
+                significance: "Importante sitio turístico y científico para el estudio de vulcanología."
+            },
+            {
+                id: 3,
+                name: "Islas Solentiname",
+                location: "Río San Juan",
+                type: "cultural",
+                x: 75,
+                y: 50,
+                description: "Archipiélago en el Lago de Nicaragua conocido por su arte naif y comunidad artística.",
+                history: "Descubiertas por los españoles en el siglo XVI, se convirtieron en un centro artístico en los años 60-70.",
+                significance: "Centro de arte primitivista nicaragüense y lugar de encuentro cultural."
+            },
+            {
+                id: 4,
+                name: "Ruinas de León Viejo",
+                location: "León",
+                type: "historical",
+                x: 20,
+                y: 30,
+                description: "Primer asentamiento español en Nicaragua, destruido por el volcán Momotombo en 1610.",
+                history: "Fundada en 1524, fue la primera capital de Nicaragua hasta su destrucción.",
+                significance: "Patrimonio de la Humanidad por la UNESCO, muestra la historia colonial temprana."
+            },
+            {
+                id: 5,
+                name: "Laguna de Apoyo",
+                location: "Masaya/Granada",
+                type: "natural",
+                x: 50,
+                y: 40,
+                description: "Crater volcánico con aguas cristalinas, uno de los lagos más profundos de Centroamérica.",
+                history: "Formado por la erupción de un volcán hace aproximadamente 23,000 años.",
+                significance: "Importante reserva natural y sitio de buceo único en Nicaragua."
+            },
+            {
+                id: 6,
+                name: "Fortaleza de la Inmaculada Concepción",
+                location: "Granada",
+                type: "historical",
+                x: 55,
+                y: 45,
+                description: "Fortaleza española del siglo XVII construida para proteger Granada de piratas.",
+                history: "Construida entre 1673 y 1675, es una de las fortalezas mejor conservadas de América Latina.",
+                significance: "Símbolo de la resistencia española contra los piratas en el siglo XVII."
+            },
+            {
+                id: 7,
+                name: "Catedral de Granada",
+                location: "Granada",
+                type: "historical",
+                x: 60,
+                y: 42,
+                description: "Imponente catedral neoclásica que domina el skyline de Granada.",
+                history: "Construida en el siglo XIX, reemplaza a la catedral original destruida por un terremoto.",
+                significance: "Centro religioso y cultural de Granada, ejemplo de arquitectura neoclásica."
+            },
+            {
+                id: 8,
+                name: "Volcán Momotombo",
+                location: "León",
+                type: "natural",
+                x: 25,
+                y: 20,
+                description: "Volcán activo y símbolo nacional de Nicaragua, visible desde gran parte del país.",
+                history: "Ha erupcionado más de 20 veces en los últimos 450 años.",
+                significance: "Parte del paisaje nacional y importante para la vulcanología."
+            },
+            {
+                id: 9,
+                name: "Basílica de Nuestra Señora de la Asunción",
+                location: "León",
+                type: "historical",
+                x: 18,
+                y: 28,
+                description: "Basílica menor y uno de los templos más importantes de Nicaragua.",
+                history: "Construida en el siglo XVIII, es un ejemplo del barroco nicaragüense.",
+                significance: "Centro de peregrinación religiosa y patrimonio arquitectónico."
+            },
+            {
+                id: 10,
+                name: "Reserva Biológica Indio-Maíz",
+                location: "RAAN",
+                type: "natural",
+                x: 85,
+                y: 15,
+                description: "Una de las reservas naturales más grandes de Centroamérica, hogar de comunidades indígenas.",
+                history: "Establecida en 1991 para proteger la biodiversidad y las culturas indígenas.",
+                significance: "Importante para la conservación de especies endémicas y culturas tradicionales."
+            }
+        ];
+    }
 }
