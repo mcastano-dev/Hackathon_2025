@@ -729,51 +729,93 @@ function initHomePage() {
     };
 
     function loadNicaraguaMap() {
-        const mapContainer = document.querySelector('.nicaragua-map');
-
-        // Create a simplified SVG map of Nicaragua
-        const mapSVG = `
-            <svg viewBox="0 0 400 600" class="nicaragua-svg">
-                <!-- Simplified outline of Nicaragua -->
-                <path d="M50,100 L350,80 L380,150 L360,250 L320,350 L280,400 L200,450 L150,480 L100,500 L80,450 L60,350 L50,250 Z"
-                      fill="#f0f8ff" stroke="#10426F" stroke-width="2"/>
-
-                <!-- Lake Nicaragua -->
-                <ellipse cx="200" cy="350" rx="80" ry="40" fill="#87CEEB" stroke="#10426F" stroke-width="1"/>
-
-                <!-- Lake Managua -->
-                <ellipse cx="150" cy="200" rx="40" ry="25" fill="#87CEEB" stroke="#10426F" stroke-width="1"/>
-
-                <!-- Department labels (simplified) -->
-                <text x="120" y="180" class="department-label">Managua</text>
-                <text x="220" y="320" class="department-label">Granada</text>
-                <text x="80" y="280" class="department-label">León</text>
-                <text x="300" y="200" class="department-label">RAAN</text>
-                <text x="320" y="280" class="department-label">RAAS</text>
-            </svg>
-        `;
-
-        mapContainer.innerHTML = mapSVG;
-
-        // Add landmarks pins
-        addLandmarkPins();
+        // Google Maps will be initialized by the callback function
+        // This function is called when the mapa section becomes active
+        if (window.google && window.google.maps) {
+            initGoogleMap();
+        } else {
+            // If Google Maps isn't loaded yet, wait for it
+            window.initMap = initGoogleMap;
+        }
     }
 
-    function addLandmarkPins() {
-        const landmarks = getNicaraguanLandmarks();
+    function initGoogleMap() {
         const mapContainer = document.querySelector('.nicaragua-map');
 
+        // Center of Nicaragua
+        const nicaraguaCenter = { lat: 12.8654, lng: -85.2072 };
+
+        // Create Google Map
+        const map = new google.maps.Map(mapContainer, {
+            zoom: 7,
+            center: nicaraguaCenter,
+            mapTypeId: google.maps.MapTypeId.HYBRID, // Satellite view
+            disableDefaultUI: false,
+            zoomControl: true,
+            mapTypeControl: true,
+            scaleControl: true,
+            streetViewControl: true,
+            rotateControl: false,
+            fullscreenControl: true
+        });
+
+        // Store map instance globally for marker management
+        window.nicaraguaMap = map;
+
+        // Add landmarks as markers
+        addGoogleMapMarkers(map);
+    }
+
+    function addGoogleMapMarkers(map) {
+        const landmarks = getNicaraguanLandmarks();
+
+        // Custom marker icons by type
+        const markerIcons = {
+            historical: {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="16" r="14" fill="#E45953" stroke="white" stroke-width="3"/>
+                        <path d="M16 6 L20 14 L16 12 L12 14 Z" fill="white"/>
+                    </svg>
+                `),
+                scaledSize: new google.maps.Size(32, 32),
+                anchor: new google.maps.Point(16, 32)
+            },
+            cultural: {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="16" r="14" fill="#FDBC32" stroke="white" stroke-width="3"/>
+                        <path d="M12 12 L20 12 L20 16 L16 20 L12 16 Z" fill="white"/>
+                    </svg>
+                `),
+                scaledSize: new google.maps.Size(32, 32),
+                anchor: new google.maps.Point(16, 32)
+            },
+            natural: {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="16" r="14" fill="#22c55e" stroke="white" stroke-width="3"/>
+                        <path d="M8 20 Q16 8 24 20 Q16 16 8 20" fill="white"/>
+                    </svg>
+                `),
+                scaledSize: new google.maps.Size(32, 32),
+                anchor: new google.maps.Point(16, 32)
+            }
+        };
+
         landmarks.forEach(landmark => {
-            const pin = document.createElement('div');
-            pin.className = `map-pin ${landmark.type}`;
-            pin.style.left = `${landmark.x}%`;
-            pin.style.top = `${landmark.y}%`;
-            pin.setAttribute('data-landmark', landmark.id);
-            pin.title = landmark.name;
+            const marker = new google.maps.Marker({
+                position: { lat: landmark.lat, lng: landmark.lng },
+                map: map,
+                title: landmark.name,
+                icon: markerIcons[landmark.type],
+                animation: google.maps.Animation.DROP
+            });
 
-            pin.addEventListener('click', () => showLandmarkInfo(landmark));
-
-            mapContainer.appendChild(pin);
+            // Add click listener to show landmark info
+            marker.addListener('click', () => {
+                showLandmarkInfo(landmark);
+            });
         });
     }
 
@@ -815,8 +857,8 @@ function initHomePage() {
                 name: "Catedral de León",
                 location: "León",
                 type: "historical",
-                x: 15,
-                y: 25,
+                lat: 12.4370,
+                lng: -86.8794,
                 description: "La Catedral de León es una de las catedrales más antiguas de América Latina y un símbolo de la arquitectura colonial española.",
                 history: "Construida entre 1747 y 1814, es Patrimonio de la Humanidad por la UNESCO desde 2011.",
                 significance: "Representa la fusión de culturas indígenas y españolas en Nicaragua."
@@ -826,8 +868,8 @@ function initHomePage() {
                 name: "Volcán Masaya",
                 location: "Masaya",
                 type: "natural",
-                x: 45,
-                y: 35,
+                lat: 11.9859,
+                lng: -86.1612,
                 description: "Uno de los volcanes más activos de Nicaragua, conocido como la 'Boca del Infierno'.",
                 history: "Ha estado activo por miles de años y es parte del Parque Nacional Volcán Masaya.",
                 significance: "Importante sitio turístico y científico para el estudio de vulcanología."
@@ -837,8 +879,8 @@ function initHomePage() {
                 name: "Islas Solentiname",
                 location: "Río San Juan",
                 type: "cultural",
-                x: 75,
-                y: 50,
+                lat: 11.2361,
+                lng: -84.8269,
                 description: "Archipiélago en el Lago de Nicaragua conocido por su arte naif y comunidad artística.",
                 history: "Descubiertas por los españoles en el siglo XVI, se convirtieron en un centro artístico en los años 60-70.",
                 significance: "Centro de arte primitivista nicaragüense y lugar de encuentro cultural."
@@ -848,8 +890,8 @@ function initHomePage() {
                 name: "Ruinas de León Viejo",
                 location: "León",
                 type: "historical",
-                x: 20,
-                y: 30,
+                lat: 12.4286,
+                lng: -86.6175,
                 description: "Primer asentamiento español en Nicaragua, destruido por el volcán Momotombo en 1610.",
                 history: "Fundada en 1524, fue la primera capital de Nicaragua hasta su destrucción.",
                 significance: "Patrimonio de la Humanidad por la UNESCO, muestra la historia colonial temprana."
@@ -859,8 +901,8 @@ function initHomePage() {
                 name: "Laguna de Apoyo",
                 location: "Masaya/Granada",
                 type: "natural",
-                x: 50,
-                y: 40,
+                lat: 11.9158,
+                lng: -86.0486,
                 description: "Crater volcánico con aguas cristalinas, uno de los lagos más profundos de Centroamérica.",
                 history: "Formado por la erupción de un volcán hace aproximadamente 23,000 años.",
                 significance: "Importante reserva natural y sitio de buceo único en Nicaragua."
@@ -870,8 +912,8 @@ function initHomePage() {
                 name: "Fortaleza de la Inmaculada Concepción",
                 location: "Granada",
                 type: "historical",
-                x: 55,
-                y: 45,
+                lat: 11.9344,
+                lng: -85.9575,
                 description: "Fortaleza española del siglo XVII construida para proteger Granada de piratas.",
                 history: "Construida entre 1673 y 1675, es una de las fortalezas mejor conservadas de América Latina.",
                 significance: "Símbolo de la resistencia española contra los piratas en el siglo XVII."
@@ -881,8 +923,8 @@ function initHomePage() {
                 name: "Catedral de Granada",
                 location: "Granada",
                 type: "historical",
-                x: 60,
-                y: 42,
+                lat: 11.9342,
+                lng: -85.9572,
                 description: "Imponente catedral neoclásica que domina el skyline de Granada.",
                 history: "Construida en el siglo XIX, reemplaza a la catedral original destruida por un terremoto.",
                 significance: "Centro religioso y cultural de Granada, ejemplo de arquitectura neoclásica."
@@ -892,8 +934,8 @@ function initHomePage() {
                 name: "Volcán Momotombo",
                 location: "León",
                 type: "natural",
-                x: 25,
-                y: 20,
+                lat: 12.4214,
+                lng: -86.5397,
                 description: "Volcán activo y símbolo nacional de Nicaragua, visible desde gran parte del país.",
                 history: "Ha erupcionado más de 20 veces en los últimos 450 años.",
                 significance: "Parte del paisaje nacional y importante para la vulcanología."
@@ -903,8 +945,8 @@ function initHomePage() {
                 name: "Basílica de Nuestra Señora de la Asunción",
                 location: "León",
                 type: "historical",
-                x: 18,
-                y: 28,
+                lat: 12.4372,
+                lng: -86.8792,
                 description: "Basílica menor y uno de los templos más importantes de Nicaragua.",
                 history: "Construida en el siglo XVIII, es un ejemplo del barroco nicaragüense.",
                 significance: "Centro de peregrinación religiosa y patrimonio arquitectónico."
@@ -914,8 +956,8 @@ function initHomePage() {
                 name: "Reserva Biológica Indio-Maíz",
                 location: "RAAN",
                 type: "natural",
-                x: 85,
-                y: 15,
+                lat: 14.0167,
+                lng: -84.0167,
                 description: "Una de las reservas naturales más grandes de Centroamérica, hogar de comunidades indígenas.",
                 history: "Establecida en 1991 para proteger la biodiversidad y las culturas indígenas.",
                 significance: "Importante para la conservación de especies endémicas y culturas tradicionales."

@@ -1111,64 +1111,9 @@ body {
   flex: 1;
   min-width: 300px;
   height: 500px;
-  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
   border-radius: 8px;
-  position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-}
-.map-container .nicaragua-map .nicaragua-svg {
-  width: 100%;
-  height: 100%;
-}
-.map-container .nicaragua-map .nicaragua-svg path {
-  transition: fill 0.3s ease;
-}
-.map-container .nicaragua-map .nicaragua-svg path:hover {
-  fill: #dbeafe;
-}
-.map-container .nicaragua-map .nicaragua-svg .department-label {
-  font-size: 12px;
-  fill: #10426f;
-  font-weight: 500;
-  text-anchor: middle;
-  pointer-events: none;
-}
-.map-container .nicaragua-map .map-pin {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #fefefe;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  transform: translate(-50%, -50%);
-}
-.map-container .nicaragua-map .map-pin:hover {
-  transform: translate(-50%, -50%) scale(1.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-.map-container .nicaragua-map .map-pin.historical {
-  background: #e45953;
-}
-.map-container .nicaragua-map .map-pin.cultural {
-  background: #fdbc32;
-}
-.map-container .nicaragua-map .map-pin.natural {
-  background: #22c55e;
-}
-.map-container .nicaragua-map .map-pin::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid rgba(0, 0, 0, 0.3);
 }
 
 .map-info {
