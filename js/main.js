@@ -97,6 +97,8 @@ function initHomePage() {
                 initInteractiveMap();
             } else if (sectionId === 'calendario') {
                 initCulturalCalendar();
+            } else if (sectionId === 'retos') {
+                initChallengesSection();
             }
         }
     }
@@ -571,6 +573,13 @@ function initHomePage() {
     function initCulturalCalendar() {
         loadCulturalEvents();
         setupCalendarEvents();
+    }
+
+    // Challenges functionality
+    function initChallengesSection() {
+        loadUserProgress();
+        setupChallengeEvents();
+        updateUI();
     }
 
     function setupLibraryEvents() {
@@ -1357,5 +1366,412 @@ function initHomePage() {
                 relatedLandmarks: ["Playa de San Jorge", "Mercados costeros"]
             }
         ];
+    }
+
+    // Challenge Game Variables
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let userScore = 0;
+    let questionsAnswered = 0;
+    let currentLevel = 'beginner';
+    let gameActive = false;
+
+    function loadUserProgress() {
+        const progress = JSON.parse(localStorage.getItem('challengeProgress')) || {
+            totalScore: 0,
+            questionsAnswered: 0,
+            rank: 'Principiante'
+        };
+
+        userScore = progress.totalScore;
+        questionsAnswered = progress.questionsAnswered;
+    }
+
+    function saveUserProgress() {
+        const progress = {
+            totalScore: userScore,
+            questionsAnswered: questionsAnswered,
+            rank: getUserRank()
+        };
+        localStorage.setItem('challengeProgress', JSON.stringify(progress));
+    }
+
+    function getUserRank() {
+        if (userScore >= 151) return 'Avanzado';
+        if (userScore >= 51) return 'Intermedio';
+        return 'Principiante';
+    }
+
+    function updateUI() {
+        document.getElementById('total-score').textContent = userScore;
+        document.getElementById('current-rank').textContent = getUserRank();
+        document.getElementById('questions-answered').textContent = questionsAnswered;
+
+        // Update rank badge class
+        const rankElement = document.getElementById('current-rank');
+        rankElement.className = 'stat-value rank-badge';
+
+        const rank = getUserRank();
+        if (rank === 'Intermedio') rankElement.classList.add('intermediate');
+        else if (rank === 'Avanzado') rankElement.classList.add('advanced');
+    }
+
+    function setupChallengeEvents() {
+        // Level selection
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentLevel = e.target.dataset.level;
+            });
+        });
+
+        // Start challenge
+        document.getElementById('start-challenge').addEventListener('click', startChallenge);
+
+        // Reset progress
+        document.getElementById('reset-progress').addEventListener('click', resetProgress);
+
+        // Game controls
+        document.getElementById('next-question').addEventListener('click', nextQuestion);
+        document.getElementById('finish-challenge').addEventListener('click', finishChallenge);
+    }
+
+    function startChallenge() {
+        currentQuestions = getTriviaQuestions(currentLevel);
+        currentQuestionIndex = 0;
+        gameActive = true;
+
+        // Shuffle questions
+        currentQuestions = shuffleArray(currentQuestions);
+
+        document.getElementById('challenge-game').style.display = 'block';
+        document.getElementById('start-challenge').style.display = 'none';
+
+        loadQuestion();
+        updateQuestionCounter();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex >= currentQuestions.length) {
+            finishChallenge();
+            return;
+        }
+
+        const question = currentQuestions[currentQuestionIndex];
+        document.getElementById('question-text').textContent = question.question;
+
+        const optionsContainer = document.getElementById('answer-options');
+        optionsContainer.innerHTML = '';
+
+        question.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'answer-option';
+            button.textContent = option;
+            button.dataset.index = index;
+            button.addEventListener('click', () => selectAnswer(index));
+            optionsContainer.appendChild(button);
+        });
+
+        // Hide feedback
+        document.getElementById('game-feedback').style.display = 'none';
+        document.getElementById('next-question').style.display = 'none';
+    }
+
+    function selectAnswer(selectedIndex) {
+        if (!gameActive) return;
+
+        const question = currentQuestions[currentQuestionIndex];
+        const isCorrect = selectedIndex === question.correctAnswer;
+        const points = isCorrect ? 10 : -5;
+
+        userScore += points;
+        questionsAnswered++;
+
+        // Update UI
+        updateUI();
+
+        // Show feedback
+        showFeedback(isCorrect, points);
+
+        // Disable all options
+        document.querySelectorAll('.answer-option').forEach(btn => {
+            btn.disabled = true;
+            if (parseInt(btn.dataset.index) === question.correctAnswer) {
+                btn.classList.add('correct');
+            } else if (parseInt(btn.dataset.index) === selectedIndex && !isCorrect) {
+                btn.classList.add('incorrect');
+            }
+        });
+
+        gameActive = false;
+        document.getElementById('next-question').style.display = 'block';
+    }
+
+    function showFeedback(isCorrect, points) {
+        const feedback = document.getElementById('game-feedback');
+        const icon = document.getElementById('feedback-icon');
+        const title = document.getElementById('feedback-title');
+        const text = document.getElementById('feedback-text');
+
+        if (isCorrect) {
+            icon.textContent = '✅';
+            title.textContent = '¡Correcto!';
+            text.textContent = `Has ganado ${points} puntos`;
+            feedback.className = 'game-feedback correct';
+        } else {
+            icon.textContent = '❌';
+            title.textContent = 'Incorrecto';
+            text.textContent = `Se restaron ${Math.abs(points)} puntos`;
+            feedback.className = 'game-feedback incorrect';
+        }
+
+        feedback.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        gameActive = true;
+
+        if (currentQuestionIndex >= currentQuestions.length) {
+            finishChallenge();
+        } else {
+            loadQuestion();
+            updateQuestionCounter();
+        }
+    }
+
+    function finishChallenge() {
+        saveUserProgress();
+
+        document.getElementById('challenge-game').style.display = 'none';
+        document.getElementById('start-challenge').style.display = 'block';
+        document.getElementById('finish-challenge').style.display = 'none';
+        document.getElementById('next-question').style.display = 'none';
+
+        // Show final score
+        setTimeout(() => {
+            alert(`¡Reto completado!\nPuntuación final: ${userScore}\nRango: ${getUserRank()}`);
+        }, 500);
+    }
+
+    function resetProgress() {
+        if (confirm('¿Estás seguro de que quieres reiniciar tu progreso? Se perderán todos los puntos y el rango.')) {
+            userScore = 0;
+            questionsAnswered = 0;
+            localStorage.removeItem('challengeProgress');
+            updateUI();
+        }
+    }
+
+    function updateQuestionCounter() {
+        document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+        document.getElementById('total-questions').textContent = currentQuestions.length;
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function getTriviaQuestions(level) {
+        const questions = {
+            beginner: [
+                {
+                    question: "¿Cuál es la capital de Nicaragua?",
+                    options: ["León", "Granada", "Managua", "Masaya"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "¿Qué volcán es conocido como la 'Boca del Infierno'?",
+                    options: ["Volcán Momotombo", "Volcán Masaya", "Volcán Mombacho", "Volcán Concepción"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es el lago más grande de Nicaragua?",
+                    options: ["Lago de Nicaragua", "Lago de Managua", "Lago de Apoyo", "Lago de Xolotlán"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué poeta nicaragüense es conocido por 'Azul'?",
+                    options: ["Ernesto Cardenal", "Rubén Darío", "Gioconda Belli", "Pablo Antonio Cuadra"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es la moneda oficial de Nicaragua?",
+                    options: ["Peso nicaragüense", "Córdoba", "Quetzal", "Lempira"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Qué departamento nicaragüense es famoso por sus carnavales?",
+                    options: ["León", "Granada", "Masaya", "Chinandega"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "¿Cuál es el río más largo de Nicaragua?",
+                    options: ["Río San Juan", "Río Coco", "Río Grande de Matagalpa", "Río Prinzapolka"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Qué isla nicaragüense es conocida por su arte naif?",
+                    options: ["Isla de Ometepe", "Islas Solentiname", "Isla del Maíz", "Isla de Zapatera"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es el baile nacional de Nicaragua?",
+                    options: ["El Güegüense", "El Toro Huaco", "La Indita", "Los Diablitos"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué fruta es originaria de Nicaragua y se conoce como 'marañón'?",
+                    options: ["Mango", "Anacardo", "Coco", "Piña"],
+                    correctAnswer: 1
+                }
+            ],
+            intermediate: [
+                {
+                    question: "¿En qué año Nicaragua obtuvo su independencia de España?",
+                    options: ["1821", "1838", "1893", "1979"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Cuál es el nombre del tratado que definió las fronteras entre Nicaragua y Costa Rica?",
+                    options: ["Tratado Cañas-Jerez", "Tratado Bryan-Chamorro", "Tratado Espinoza-Pacheco", "Tratado de Guadalupe-Hidalgo"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué presidente nicaragüense impulsó la 'Revolución Liberal'?",
+                    options: ["José Santos Zelaya", "Anastasio Somoza García", "Violeta Chamorro", "Daniel Ortega"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Cuál es el nombre del canal interoceánico que se planeó construir en Nicaragua?",
+                    options: ["Canal de Suez", "Canal de Panamá", "Canal de Nicaragua", "Canal de Kiel"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "¿Qué poeta nicaragüense fundó el 'Movimiento de Vanguardia'?",
+                    options: ["Rubén Darío", "Salomón de la Selva", "José Coronel Urtecho", "Pablo Antonio Cuadra"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "¿Cuál es el nombre de la reserva natural más grande de Centroamérica ubicada en Nicaragua?",
+                    options: ["Reserva de Bosawás", "Reserva Indio-Maíz", "Parque Nacional Volcán Masaya", "Refugio de Vida Silvestre Río San Juan"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué ciudad nicaragüense es conocida como 'La Ciudad de las Iglesias'?",
+                    options: ["León", "Granada", "Masaya", "Chinandega"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es el nombre del volcán que destruyó la antigua ciudad de León Viejo?",
+                    options: ["Volcán Momotombo", "Volcán Cerro Negro", "Volcán Telica", "Volcán San Cristóbal"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué etnia indígena es conocida por sus tallas en madera y cerámica en Nicaragua?",
+                    options: ["Miskitos", "Mayagnas", "Rama", "Garífunas"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Cuál es el nombre del festival internacional de poesía que se celebra en Granada?",
+                    options: ["Festival de León", "Festival de Granada", "Festival Internacional de Poesía de Granada", "Festival Rubén Darío"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "¿Qué presidente nicaragüense fue derrocado en la Revolución de 1979?",
+                    options: ["Luis Somoza Debayle", "Anastasio Somoza Debayle", "Anastasio Somoza García", "Tachito Somoza"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es el nombre del archipiélago que inspiró a Ernest Hemingway?",
+                    options: ["Islas Solentiname", "Isla de Ometepe", "Isla del Maíz", "Isla de Zapatera"],
+                    correctAnswer: 0
+                }
+            ],
+            advanced: [
+                {
+                    question: "¿Qué tratado permitió a Estados Unidos construir un canal en Nicaragua?",
+                    options: ["Tratado Clayton-Bulwer", "Tratado Bryan-Chamorro", "Tratado Taft", "Tratado Knox-Castrillo"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es el nombre del movimiento literario fundado por Rubén Darío?",
+                    options: ["Realismo mágico", "Modernismo", "Criollismo", "Indigenismo"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Qué batalla decisiva en 1856 aseguró la independencia de Nicaragua?",
+                    options: ["Batalla de San Jacinto", "Batalla de Rivas", "Batalla de Granada", "Batalla de León"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es el nombre del primer periódico publicado en Nicaragua?",
+                    options: ["El Nicaragüense", "La Gaceta", "El Correo del Istmo", "La Noticia"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "¿Qué poeta nicaragüense fue premio Cervantes en 2006?",
+                    options: ["Ernesto Cardenal", "Sergio Ramírez", "Gioconda Belli", "Claribel Alegría"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Cuál es el nombre de la constitución nicaragüense de 1987?",
+                    options: ["Constitución de 1974", "Constitución de 1987", "Constitución de 1995", "Constitución de 2014"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Qué emperador azteca visitó Nicaragua según las crónicas?",
+                    options: ["Moctezuma I", "Moctezuma II", "Ahuitzotl", "Tizoc"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Cuál es el nombre del primer obispo de Nicaragua?",
+                    options: ["Antonio de Valdivieso", "Diego Alvarez de Osorio", "Pedro de Angulo", "Juan de Dios Muñoz Zeledón"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué tratado puso fin a la guerra entre Nicaragua y Costa Rica en 1858?",
+                    options: ["Tratado Cañas-Jerez", "Tratado Espinoza-Pacheco", "Tratado Gutiérrez-López", "Tratado Ramírez-Herrera"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Cuál es el nombre del movimiento revolucionario de 1979?",
+                    options: ["Frente Sandinista de Liberación Nacional", "Frente Patriótico Nacional", "Movimiento de Liberación Nacional", "Alianza Cívica Nicaragüense"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué presidente nicaragüense nacionalizó las minas en 1979?",
+                    options: ["Anastasio Somoza Debayle", "Francisco Urcuyo", "Daniel Ortega", "Violeta Chamorro"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "¿Cuál es el nombre del primer libro impreso en Nicaragua?",
+                    options: ["Doctrina Cristiana", "Gramática de la Lengua Miskita", "Historia de Nicaragua", "Constitución Política"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Qué poeta nicaragüense fundó la revista 'Vanguardia'?",
+                    options: ["José Coronel Urtecho", "Pablo Antonio Cuadra", "Ernesto Mejía Sánchez", "Carlos Martínez Rivas"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "¿Cuál es el nombre del primer ferrocarril construido en Nicaragua?",
+                    options: ["Ferrocarril del Pacífico", "Ferrocarril de León", "Ferrocarril de Granada", "Ferrocarril de Matagalpa"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "¿Qué batalla en 1860 consolidó la unión centroamericana?",
+                    options: ["Batalla de Sardinal", "Batalla de San Jorge", "Batalla de Rivas", "Batalla de Masaya"],
+                    correctAnswer: 1
+                }
+            ]
+        };
+
+        return questions[level] || questions.beginner;
     }
 }

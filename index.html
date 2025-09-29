@@ -211,6 +211,106 @@
                 </div>
             </section>
 
+            <!-- Other Sections -->
+            <section id="retos" class="section">
+                <div class="challenges-header">
+                    <h2>Retos y Juegos Didácticos</h2>
+                    <p>¡Pon a prueba tus conocimientos sobre la cultura nicaragüense y gana puntos para subir de rango!</p>
+                </div>
+
+                <div class="challenges-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Puntuación Total</span>
+                            <span class="stat-value" id="total-score">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Rango Actual</span>
+                            <span class="stat-value rank-badge" id="current-rank">Principiante</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Preguntas Respondidas</span>
+                            <span class="stat-value" id="questions-answered">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="challenges-controls">
+                    <div class="level-selection">
+                        <h3>Selecciona tu nivel:</h3>
+                        <div class="level-buttons">
+                            <button class="level-btn active" data-level="beginner">Principiante</button>
+                            <button class="level-btn" data-level="intermediate">Intermedio</button>
+                            <button class="level-btn" data-level="advanced">Avanzado</button>
+                        </div>
+                    </div>
+                    <div class="game-controls">
+                        <button id="start-challenge" class="btn-primary">Iniciar Reto</button>
+                        <button id="reset-progress" class="btn-secondary">Reiniciar Progreso</button>
+                    </div>
+                </div>
+
+                <div id="challenge-game" class="challenge-game" style="display: none;">
+                    <div class="question-counter">
+                        <span id="current-question">1</span> / <span id="total-questions">10</span>
+                    </div>
+
+                    <div class="question-card">
+                        <h3 id="question-text">¿Cuál es la capital de Nicaragua?</h3>
+                        <div class="answer-options" id="answer-options">
+                            <!-- Options will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="game-feedback" id="game-feedback" style="display: none;">
+                        <div class="feedback-content">
+                            <div class="feedback-icon" id="feedback-icon">✅</div>
+                            <h4 id="feedback-title">¡Correcto!</h4>
+                            <p id="feedback-text">Has ganado 10 puntos</p>
+                        </div>
+                    </div>
+
+                    <div class="game-actions">
+                        <button id="next-question" class="btn-primary" style="display: none;">Siguiente Pregunta</button>
+                        <button id="finish-challenge" class="btn-secondary" style="display: none;">Finalizar Reto</button>
+                    </div>
+                </div>
+
+                <div class="rank-system">
+                    <h3>Sistema de Rangos</h3>
+                    <div class="rank-progression">
+                        <div class="rank-level">
+                            <div class="rank-icon">🌱</div>
+                            <div class="rank-info">
+                                <h4>Principiante</h4>
+                                <p>0 - 50 puntos</p>
+                            </div>
+                        </div>
+                        <div class="rank-level">
+                            <div class="rank-icon">🌟</div>
+                            <div class="rank-info">
+                                <h4>Intermedio</h4>
+                                <p>51 - 150 puntos</p>
+                            </div>
+                        </div>
+                        <div class="rank-level">
+                            <div class="rank-icon">👑</div>
+                            <div class="rank-info">
+                                <h4>Avanzado</h4>
+                                <p>151+ puntos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="biblioteca" class="section">
                 <div class="library-header">
                     <h2>Biblioteca Cultural</h2>
